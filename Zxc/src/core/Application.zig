@@ -3,6 +3,9 @@ const core = @import("../core/mod.zig");
 const cli = @import("../cli/parser.zig");
 const fmt = @import("../utils/format.zig");
 
+const build_options = @import("build_options");
+const version = build_options.zxc_version;
+
 pub const Application = struct
 {
     allocator: std.mem.Allocator,
@@ -24,7 +27,7 @@ pub const Application = struct
         
         if (args.options.contains("--version"))
         {
-            try fmt.printInfof("zxc v0.1.0 — the flexible CLI for Zig", .{});
+            try fmt.printInfof("zxc v{s} — the flexible CLI for Zig", .{version});
             try fmt.printNote("Dynamic command registry, fluent options, and smart help.");
             try fmt.printNote("Built with ❤️ using Zig.");
             try fmt.printNote("License: MIT");

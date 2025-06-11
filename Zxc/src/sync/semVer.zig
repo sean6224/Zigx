@@ -119,6 +119,12 @@ pub const SemVer = struct
             try writer.print("+{s}", .{build});
         }
     }
+
+    pub fn isNewerThan(self: SemVer, other: *const SemVer) bool {
+        return self.major > other.major
+            or (self.major == other.major and self.minor > other.minor)
+            or (self.major == other.major and self.minor == other.minor and self.patch > other.patch);
+    }
 };
 
 pub const errors = error{

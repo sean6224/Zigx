@@ -1,5 +1,6 @@
 ﻿const std = @import("std");
 const core = @import("command.zig");
+const builtin_options = @import("../commands/options/builtin_options.zig");
 
 var global_registry: ?*core.CommandRegistry = null;
 
@@ -24,15 +25,17 @@ pub fn initGlobalRegistry(allocator: std.mem.Allocator) !*core.CommandRegistry
         });
         try reg_ptr.registerOption(.
         {
-            .name = "--version",
-            .alias = "-v",
-            .description = "Print version and exit",
-        });
-        try reg_ptr.registerOption(.
-        {
             .name = "--help",
             .alias = "-h",
             .description = "Show help information",
+        });
+        
+        try reg_ptr.registerOption(.
+        {
+            .name = "--version",
+            .alias = "-v",
+            .description = "Print version and exit",
+            .handler = &builtin_options.versioncheck
         });
     }
     return global_registry.?;

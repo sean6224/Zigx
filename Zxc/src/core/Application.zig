@@ -22,21 +22,23 @@ pub const Application = struct
 
     pub fn run(self: *Application) !void
     {
-        var args = try cli.parseArgs(self.allocator);
+        var args = try cli.parseArgs(self.allocator, self.registry);
         defer args.deinit(self.allocator);
-        
-        if (args.options.contains("--version"))
-        {
-            try fmt.printInfof("zxc v{s} — the flexible CLI for Zig", .{version});
-            try fmt.printNote("Dynamic command registry, fluent options, and smart help.");
-            try fmt.printNote("Built with ❤️ using Zig.");
-            try fmt.printNote("License: MIT");
-            return;
-        }
-        
-        try self.validateOptions(&args.options);
 
-        if (args.options.contains("--help") or args.positional.len == 0)
+        var it = args.options.iterator();
+        while (it.next()) |entry|
+        {
+            if (self.registry.getOption(entry.key_ptr.*)) |opt|
+            {
+                if (opt.handler) |func|
+                {
+                    try func(self.allocator);
+                    return;
+                }
+            }
+        }
+
+        if(args.positional.len == 0)
         {
             self.showHelp();
             return;

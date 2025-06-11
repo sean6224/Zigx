@@ -17,6 +17,7 @@ pub const Option = struct
     name: []const u8,
     alias: ?[]const u8 = null,
     description: []const u8,
+    handler: ?*const fn (allocator: std.mem.Allocator) anyerror!void = null
 };
 
 pub const CommandRegistry = struct
@@ -53,7 +54,16 @@ pub const CommandRegistry = struct
             try self.options.put(a, option);
         }
     }
-
+    
+    pub fn resolveOptionAlias(self: *CommandRegistry, name: []const u8) ?[]const u8
+    {
+        if (self.options.get(name)) |opt|
+        {
+            return opt.name;
+        }
+        return null;
+    }
+    
     pub fn get(self: *CommandRegistry, name: []const u8) ?Command
     {
         return self.commands.get(name);
